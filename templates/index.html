@@ -1,55 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prediksi Harga Handphone</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
     <style>
         body {
-            font-family: Arial, sans-serif;
             margin: 50px;
         }
-        input, button {
-            padding: 10px;
-            margin: 5px;
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        #hasilPrediksi {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
+            margin-top: 20px;
         }
     </style>
 </head>
+
 <body>
-    <h1>Prediksi Harga Handphone</h1>
-    
-    <form id="formPrediksi">
-        <label for="merk">Merk (1=Samsung, 2=iPhone, 3=Xiaomi, 4=Oppo, 5=Realme):</label>
-        <input type="number" id="merk" required><br>
+    <div class="container">
+        <h1 class="text-center mb-4">Prediksi Harga Handphone</h1>
 
-        <label for="ram">RAM (GB):</label>
-        <input type="number" id="ram" required><br>
+        <!-- Form Prediksi -->
+        <form id="formPrediksi" class="border p-4 rounded shadow">
+            <div class="form-group">
+                <label for="merk">Merk (1=Samsung, 2=iPhone, 3=Xiaomi, 4=Oppo, 5=Realme):</label>
+                <input type="number" class="form-control" id="merk" required>
+            </div>
 
-        <label for="storage">Storage (GB):</label>
-        <input type="number" id="storage" required><br>
+            <div class="form-group">
+                <label for="ram">RAM (GB):</label>
+                <input type="number" class="form-control" id="ram" required>
+            </div>
 
-        <label for="kamera">Kamera (MP):</label>
-        <input type="number" id="kamera" required><br>
+            <div class="form-group">
+                <label for="storage">Storage (GB):</label>
+                <input type="number" class="form-control" id="storage" required>
+            </div>
 
-        <label for="baterai">Baterai (mAh):</label>
-        <input type="number" id="baterai" required><br>
+            <div class="form-group">
+                <label for="kamera">Kamera (MP):</label>
+                <input type="number" class="form-control" id="kamera" required>
+            </div>
 
-        <button type="submit">Prediksi</button>
-    </form>
+            <div class="form-group">
+                <label for="baterai">Baterai (mAh):</label>
+                <input type="number" class="form-control" id="baterai" required>
+            </div>
 
-    <h2>Hasil Prediksi:</h2>
-    <p id="hasilPrediksi"></p>
+            <button type="submit" class="btn btn-primary btn-block">Prediksi</button>
+        </form>
 
+        <!-- Hasil Prediksi -->
+        <h2 class="text-center mt-4">Hasil Prediksi:</h2>
+        <p id="hasilPrediksi" class="text-center"></p>
+    </div>
+
+    <!-- JavaScript untuk mengirim request ke API -->
     <script>
-        document.getElementById('formPrediksi').addEventListener('submit', function(e) {
+        $('#formPrediksi').on('submit', function (e) {
             e.preventDefault();
 
             // Ambil input dari form
-            const merk = document.getElementById('merk').value;
-            const ram = document.getElementById('ram').value;
-            const storage = document.getElementById('storage').value;
-            const kamera = document.getElementById('kamera').value;
-            const baterai = document.getElementById('baterai').value;
+            const merk = $('#merk').val();
+            const ram = $('#ram').val();
+            const storage = $('#storage').val();
+            const kamera = $('#kamera').val();
+            const baterai = $('#baterai').val();
 
             // Data yang akan dikirim ke API
             const data = {
@@ -61,22 +92,22 @@
             };
 
             // Mengirimkan request POST ke API
-            fetch('/predict', {
+            $.ajax({
+                url: '/predict',
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (result) {
+                    // Menampilkan hasil prediksi
+                    $('#hasilPrediksi').text('Harga Prediksi: Rp ' + result.prediksi_harga);
                 },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(result => {
-                // Menampilkan hasil prediksi
-                document.getElementById('hasilPrediksi').textContent = 'Harga Prediksi: ' + result.prediksi_harga;
-            })
-            .catch(error => {
-                console.error('Error:', error);
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                    $('#hasilPrediksi').text('Terjadi kesalahan, coba lagi.');
+                }
             });
         });
     </script>
 </body>
+
 </html>
